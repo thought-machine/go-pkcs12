@@ -158,8 +158,7 @@ func TestDecodePKCS12DataBadIterationCount(t *testing.T) {
 	}
 
 	if err != ErrIncorrectPassword {
-		t.Logf("Got error: %v", err)
-		t.Logf("Expected: %v", ErrIncorrectPassword)
+		t.Fatalf("Got error %v but expected %v", err, ErrIncorrectPassword)
 	}
 
 	t.Logf("Successfully detected bad iteration count: %v", err)
@@ -188,8 +187,7 @@ func TestDecodePKCS12DataIncorrectSalt(t *testing.T) {
 	}
 
 	if err != ErrIncorrectPassword {
-		t.Logf("Got error: %v", err)
-		t.Logf("Expected: %v", ErrIncorrectPassword)
+		t.Fatalf("Got error %v but expected %v", err, ErrIncorrectPassword)
 	}
 
 	t.Logf("Successfully detected incorrect salt: %v", err)
@@ -217,9 +215,8 @@ func TestDecodePKCS12DataMissingKeyLength(t *testing.T) {
 		t.Fatal("Expected getSafeContents to fail with missing key length, but it succeeded")
 	}
 
-	if err != ErrIncorrectPassword {
-		t.Logf("Got error: %v", err)
-		t.Logf("Expected: %v", ErrIncorrectPassword)
+	if expected := "pkcs12: PBMAC1 requires explicit KeyLength parameter in PBKDF2 parameters"; err.Error() != expected {
+		t.Fatalf("Got error %v but expected %v", err.Error(), expected)
 	}
 
 	t.Logf("Successfully detected missing key length: %v", err)
