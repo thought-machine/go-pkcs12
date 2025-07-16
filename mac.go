@@ -12,6 +12,7 @@ import (
 	"crypto/sha512"
 	"crypto/x509/pkix"
 	"encoding/asn1"
+	"errors"
 	"hash"
 
 	"golang.org/x/crypto/pbkdf2"
@@ -99,7 +100,7 @@ func doPBMAC1(algorithm pkix.AlgorithmIdentifier, message, password []byte) ([]b
 
 	// KeyLength is mandatory in RFC 9579
 	if kdfParams.KeyLength <= 0 {
-		return nil, NotImplementedError("PBMAC1 requires explicit KeyLength parameter in PBKDF2 parameters")
+		return nil, errors.New("pkcs12: PBMAC1 requires explicit KeyLength parameter in PBKDF2 parameters")
 	}
 	keyLen := kdfParams.KeyLength
 
