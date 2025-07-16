@@ -127,7 +127,7 @@ func TestDecodePKCS12DataSha512Sha512(t *testing.T) {
 		t.Error("Expected non-empty safe contents")
 	}
 
-	t.Logf("Successfully loaded PKCS#12 SHA256/SHA512 data with %d safe bag(s)", len(safeContents))
+	t.Logf("Successfully loaded PKCS#12 SHA512/SHA512 data with %d safe bag(s)", len(safeContents))
 	t.Logf("Updated password length: %d", len(updatedPassword))
 
 	for i, bag := range safeContents {
