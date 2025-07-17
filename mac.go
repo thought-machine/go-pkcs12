@@ -78,8 +78,8 @@ func doPBMAC1(algorithm pkix.AlgorithmIdentifier, message, password []byte) ([]b
 		prf = sha512.New
 	case kdfParams.Prf.Algorithm.Equal(oidHmacWithSHA1):
 		prf = sha1.New
-	case kdfParams.Prf.Algorithm.Equal(asn1.ObjectIdentifier([]int{})):
-		// Default to SHA1 when PRF is not specified
+	case kdfParams.Prf.Algorithm == nil:
+		// Algorithm not specified; defaults to SHA1 according to ASN1 definition
 		prf = sha1.New
 	default:
 		return nil, NotImplementedError("PBMAC1 PRF " + kdfParams.Prf.Algorithm.String() + " is not supported")
