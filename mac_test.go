@@ -79,7 +79,7 @@ func TestPBMAC1(t *testing.T) {
 		Salt:       asn1.RawValue{Tag: asn1.TagOctetString, Bytes: []byte{1, 2, 3, 4, 5, 6, 7, 8}},
 		Iterations: 1000,
 		KeyLength:  32,
-		Prf:        pkix.AlgorithmIdentifier{Algorithm: oidHmacWithSHA256},
+		Prf:        pkix.AlgorithmIdentifier{Algorithm: oidHmacWithSHA512},
 	}
 	kdfParamsBytes, err := asn1.Marshal(kdfParams)
 	if err != nil {
@@ -124,6 +124,10 @@ func TestPBMAC1(t *testing.T) {
 	// Verify that MAC was computed
 	if len(td.Mac.Digest) == 0 {
 		t.Error("No MAC digest was computed")
+	}
+
+	if !bytes.Equal(td.Mac.Digest, []byte{0xff, 0x5c, 0x9f, 0x02, 0x8c, 0xdc, 0x21, 0xa1, 0xa1, 0x17, 0x12, 0xa8, 0xa0, 0xe4, 0xd4, 0x2d, 0xf8, 0xf6, 0x8b, 0xc5, 0xbd, 0xec, 0xe7, 0xde, 0xcf, 0xd9, 0x2e, 0x0c, 0x65, 0xcd, 0x1c, 0x6f}) {
+		t.Error("Wrong MAC digest was computed")
 	}
 
 	// Test MAC verification
