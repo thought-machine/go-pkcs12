@@ -3,48 +3,25 @@ package pkcs12
 import (
 	"encoding/base64"
 	"os"
-	"regexp"
+	"path/filepath"
 	"testing"
 )
 
-var (
-	file1, _       = os.ReadFile("testdata/rfc9579-a1.txt")
-	pkcs12_data_ok = cleanBase64Data(string(file1))
-
-	file2, _                  = os.ReadFile("testdata/rfc9579-a2.txt")
-	pkcs12_data_sha256_sha512 = cleanBase64Data(string(file2))
-
-	file3, _                  = os.ReadFile("testdata/rfc9579-a3.txt")
-	pkcs12_data_sha512_sha512 = cleanBase64Data(string(file3))
-
-	file4, _            = os.ReadFile("testdata/rfc9579-a4.txt")
-	bad_iteration_count = cleanBase64Data(string(file4))
-
-	file5, _             = os.ReadFile("testdata/rfc9579-a5.txt")
-	incorrect_salt_value = cleanBase64Data(string(file5))
-
-	file6, _           = os.ReadFile("testdata/rfc9579-a6.txt")
-	missing_key_length = cleanBase64Data(string(file6))
-)
-
-// cleanBase64Data removes all whitespace, newlines, and tabs from base64 data
-var (
-	re = regexp.MustCompile(`\s+`)
-)
-
-func cleanBase64Data(data string) string {
-	return re.ReplaceAllString(data, "")
+func loadTestData(t *testing.T, filename string) []byte {
+	base64data, err := os.ReadFile(filepath.Join("testdata", filename))
+	if err != nil {
+		t.Fatalf("failed to load test data: %v", err)
+	}
+	rawData, err := base64.StdEncoding.DecodeString(string(base64data))
+	if err != nil {
+		t.Fatalf("failed to decode test data %q: %v", filename, err)
+	}
+	return rawData
 }
 
 // RFC 9579 Appendix A.1
 func TestDecodePKCS12DataOk(t *testing.T) {
-	cleanedData := pkcs12_data_ok
-
-	pfxData, err := base64.StdEncoding.DecodeString(cleanedData)
-	if err != nil {
-		t.Fatalf("Failed to decode base64 PKCS#12 data: %v", err)
-	}
-
+	pfxData := loadTestData(t, "rfc9579-a1.txt")
 	password := "1234"
 
 	encodedPassword, err := bmpStringZeroTerminated(password)
@@ -71,13 +48,7 @@ func TestDecodePKCS12DataOk(t *testing.T) {
 
 // RFC 9579 Appendix A.2
 func TestDecodePKCS12DataSha256Sha512(t *testing.T) {
-	cleanedData := pkcs12_data_sha256_sha512
-
-	pfxData, err := base64.StdEncoding.DecodeString(cleanedData)
-	if err != nil {
-		t.Fatalf("Failed to decode base64 PKCS#12 data: %v", err)
-	}
-
+	pfxData := loadTestData(t, "rfc9579-a2.txt")
 	password := "1234"
 
 	encodedPassword, err := bmpStringZeroTerminated(password)
@@ -104,13 +75,7 @@ func TestDecodePKCS12DataSha256Sha512(t *testing.T) {
 
 // RFC 9579 Appendix A.3
 func TestDecodePKCS12DataSha512Sha512(t *testing.T) {
-	cleanedData := pkcs12_data_sha512_sha512
-
-	pfxData, err := base64.StdEncoding.DecodeString(cleanedData)
-	if err != nil {
-		t.Fatalf("Failed to decode base64 PKCS#12 data: %v", err)
-	}
-
+	pfxData := loadTestData(t, "rfc9579-a3.txt")
 	password := "1234"
 
 	encodedPassword, err := bmpStringZeroTerminated(password)
@@ -138,13 +103,7 @@ func TestDecodePKCS12DataSha512Sha512(t *testing.T) {
 // RFC 9579 Appendix A.4
 // Test with bad iteration count
 func TestDecodePKCS12DataBadIterationCount(t *testing.T) {
-	cleanedData := bad_iteration_count
-
-	pfxData, err := base64.StdEncoding.DecodeString(cleanedData)
-	if err != nil {
-		t.Fatalf("Failed to decode base64 PKCS#12 data: %v", err)
-	}
-
+	pfxData := loadTestData(t, "rfc9579-a4.txt")
 	password := "1234"
 
 	encodedPassword, err := bmpStringZeroTerminated(password)
@@ -167,13 +126,7 @@ func TestDecodePKCS12DataBadIterationCount(t *testing.T) {
 // RFC 9579 Appendix A.5
 // Test with incorrect salt
 func TestDecodePKCS12DataIncorrectSalt(t *testing.T) {
-	cleanedData := incorrect_salt_value
-
-	pfxData, err := base64.StdEncoding.DecodeString(cleanedData)
-	if err != nil {
-		t.Fatalf("Failed to decode base64 PKCS#12 data: %v", err)
-	}
-
+	pfxData := loadTestData(t, "rfc9579-a5.txt")
 	password := "1234"
 
 	encodedPassword, err := bmpStringZeroTerminated(password)
@@ -196,13 +149,7 @@ func TestDecodePKCS12DataIncorrectSalt(t *testing.T) {
 // RFC 9579 Appendix A.6
 // Test with missing key length
 func TestDecodePKCS12DataMissingKeyLength(t *testing.T) {
-	cleanedData := missing_key_length
-
-	pfxData, err := base64.StdEncoding.DecodeString(cleanedData)
-	if err != nil {
-		t.Fatalf("Failed to decode base64 PKCS#12 data: %v", err)
-	}
-
+	pfxData := loadTestData(t, "rfc9579-a6.txt")
 	password := "1234"
 
 	encodedPassword, err := bmpStringZeroTerminated(password)
