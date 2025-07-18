@@ -118,7 +118,7 @@ func doMac(macData *macData, message, password []byte) ([]byte, error) {
 	// and ignores macData.MacSalt and macData.Iterations fields
 	if macData.Mac.Algorithm.Algorithm.Equal(oidPBMAC1) {
 		// PBMAC1 expects UTF-8 passwords (for compatibility; see Erratum 7974), but
-		// PKCS#12 passwords are BMP strings So we need to convert the BMP string back to UTF-8
+		// PKCS#12 passwords are BMP strings, so we convert the BMP string back to UTF-8
 		originalPassword, err := decodeBMPString(password)
 		if err != nil {
 			return nil, err
