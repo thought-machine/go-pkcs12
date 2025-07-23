@@ -105,7 +105,7 @@ func TestEncoder_EncodeWithoutFriendlyName(t *testing.T) {
 
 		blocks, err := ToPEM(pfxData, "test")
 		if err != nil {
-			t.Errorf("err while reading P12 bask to PEM: %v", err)
+			t.Errorf("err while reading P12 back to PEM: %v", err)
 		}
 
 		for _, p := range blocks {
